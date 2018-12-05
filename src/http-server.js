@@ -12,7 +12,11 @@ export async function startHTTP() {
       });
       app.use(express.static('public'));
       io.on('connection', function (socket) {
+        console.log('user connected');
         success(socket);
+      });
+      io.on('disconnect', function(){
+        console.log('user disconnected');
       });
     });
 };

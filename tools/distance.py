@@ -12,7 +12,7 @@ try:
       GPIO.setup(PIN_ECHO, GPIO.IN)
 
       GPIO.output(PIN_TRIGGER, GPIO.LOW)
-      # time.sleep(0.1)
+      time.sleep(0.1500)
       GPIO.output(PIN_TRIGGER, GPIO.HIGH)
 
       time.sleep(0.00001)
@@ -26,7 +26,7 @@ try:
 
       pulse_duration = pulse_end_time - pulse_start_time
       distance = round(pulse_duration * 17150, 2)
-      print "Distance:",distance,"cm"
+      print distance
 
 finally:
       GPIO.cleanup()
