@@ -5,14 +5,15 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon --exec babel-node src/index.js",
-    "test": "echo \"No test specified\" && exit 0",
-    "build": "babel src -d dest --source-maps"
+    "build": "babel src --out-dir dist",
+    "serve": "node --inspect-brk dist/index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.1.6",
+    "@babel/cli": "^7.1.6",
     "@babel/node": "^7.0.0",
     "@babel/preset-env": "^7.1.6",
     "nodemon": "^1.18.7"
