@@ -1,0 +1,20 @@
+{
+  "name": "home-guard",
+  "version": "1.0.0",
+  "description": "Raspberry PI based scriipts for securing flat from some disasters",
+  "main": "webserver.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://pzych@bitbucket.org/pzych/home-guard.git"
+  },
+  "author": "pzych",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/pzych/home-guard#readme",
+  "dependencies": {
+    "onoff": "^3.2.2",
+    "socket.io": "^2.2.0"
+  }
+}
