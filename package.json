@@ -1,21 +1,29 @@
 {
   "name": "home-guard",
   "version": "1.0.0",
-  "description": "Raspberry PI based scriipts for securing flat from some disasters",
-  "main": "webserver.js",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node webserver.js"
+    "start": "nodemon --exec babel-node src/index.js",
+    "test": "echo \"No test specified\" && exit 0",
+    "build": "babel src -d dest --source-maps"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://pzych@bitbucket.org/pzych/home-guard.git"
-  },
-  "author": "pzych",
+  "keywords": [],
+  "author": "",
   "license": "ISC",
-  "homepage": "https://bitbucket.org/pzych/home-guard#readme",
+  "devDependencies": {
+    "@babel/core": "^7.1.6",
+    "@babel/node": "^7.0.0",
+    "@babel/preset-env": "^7.1.6",
+    "nodemon": "^1.18.7"
+  },
   "dependencies": {
+    "dotenv": "^6.1.0",
+    "audio-loader": "^1.0.3",
+    "audio-play": "^2.2.1",
+    "express": "^4.16.4",
     "onoff": "^3.2.2",
+    "rxjs": "^6.3.3",
     "socket.io": "^2.2.0"
   }
 }
