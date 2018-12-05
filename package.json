@@ -26,6 +26,7 @@
     "math-statistics": "^1.2.0",
     "onoff": "^3.2.2",
     "pigpio": "^1.2.0",
+    "play-sound": "^1.1.2",
     "rpi-gpio": "^2.1.2",
     "rxjs": "^6.3.3",
     "socket.io": "^2.2.0"
