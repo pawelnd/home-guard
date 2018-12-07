@@ -4,6 +4,7 @@ import { alarm } from "./alarm";
 
 startHTTP().then(function(socket){
     setInterval(updateDistance(socket),500);    
+    watchIsWater().subscribe((a)=>{console.log(a)});
 });
 
 function updateDistance(socket){
