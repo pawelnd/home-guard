@@ -6,14 +6,14 @@ var io = require('socket.io')(server);
 
 export async function startHTTP() {
     return new Promise(function(success, nosuccess) {
-      var port = process.env.PORT || 3000;
+      var port = process.env.HTTP_PORT || 3000;
       server.listen(port, function () {
         console.log('Started server HTTP at port %d', port);
       });
       app.use(express.static('public'));
       io.on('connection', function (socket) {
-        console.log('user connected');
         success(socket);
+        console.log('user connected');
       });
       io.on('disconnect', function(){
         console.log('user disconnected');
