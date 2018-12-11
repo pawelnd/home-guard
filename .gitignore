@@ -1,6 +1,6 @@
 logfile
-
 .env
 .idea/
 dist/
 node_modules/
+firebaseServiceAccountKey.json
