@@ -1,24 +1,29 @@
-import {Observable} from "rxjs";
+import {interval} from "rxjs";
+import { map } from 'rxjs/operators';
+const { execSync } = require('child_process');
 
-export function watchTempHumidity(gpioNo) {
-    const readSingle =  (observer) => {
-        const {spawn} = require('child_process');
-        const pyprog = spawn('python', [`${__dirname}/AdafruitDHT.py`,11, gpioNo]);
-        pyprog.stdout.on('data', function (data) {
-            observer.next({
-                temp: '' + data,
-                humidity: '' + data
-            });
-        });
-        pyprog.stderr.on('data', (data) => {
-            console.log("ERROR OCCURED reading temp and humidity", '' + data);
-            observer.next({
-                temp: null,
-                humidity: null
-            });
-        });
+const parser = (response) => {
+    const REGEXP = /Temp=([^*]*).*Humidity=([^%]*)/g;
+    let matches = REGEXP.exec(response);
+    return {
+        temp:matches[1]?matches[1]:null,
+        humidity:matches[2]?matches[2]:null,
     }
-    return Observable.create(function (observer) {
-        readSingle(observer);
-    });
+}
+
+function executePythonScript(gpioNo) {
+    return execSync(`python "${__dirname}/AdafruitDHT.py" 11 ${gpioNo}`);
+}
+
+const reader =  (gpioNo) => {
+    return () => {
+        const response = executePythonScript(gpioNo);
+        return parser(response);
+    }
+}
+
+export function watchTempHumidity$(gpioNo, delay = 1000) {
+    return interval(delay).pipe(
+        map(() => reader(gpioNo)())
+    )
 }
