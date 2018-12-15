@@ -9,8 +9,7 @@ function init(gpioPhysicalNo, observer) {
 
 function read(gpioPhysicalNo) {
     let resp = execSync(`gpio -1 read ${gpioPhysicalNo}`);
-    resp = `` + resp;
-    return resp;
+    return parseInt(resp);
 }
 
 export function gpioWatch(gpioPhysicalNo,intervalTime = 500) {
