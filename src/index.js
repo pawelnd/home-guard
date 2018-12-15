@@ -1,50 +1,38 @@
+import {watchIsMotion$} from "./sensors/motion-sensor";
+
 require('dotenv').config();
 
 import {GPIO_CONFIG} from "./gpio.config";
 import {firebaseApp} from "./firebase-init";
 import {startHTTP} from "./notifications/http-server";
-import {watchIsMotion} from "./sensors/motion/motion-sensor";
-import {watchIsWater} from "./sensors/water/water-sensor";
-import {watchTempHumidity} from "./sensors/temp-humidity/temp-humidity";
+import {watchTempHumidity$} from "./sensors/temp-humidity/temp-humidity";
+import {watchIsWater$} from "./sensors/water-sensor";
+import {empty, of} from "rxjs";
 
 
-watchIsMotion(GPIO_CONFIG.MOTION_SENSOR).subscribe((val) => {
-    console.log(` motion!! ${val}`)
-});
-watchIsWater(GPIO_CONFIG.WATER_SENSOR).subscribe((val) => {
-    console.log(` water ${val}`)
-});
-watchTempHumidity(GPIO_CONFIG.THERMOMETER).subscribe(({temp,humidity}) => {
-    console.log(` temp = ${temp} and humidity = ${humidity}s`)
-});
-startHTTP().then(function (socket) {
-    console.log('user connected')
-});
-// firebaseApp.database().ref();
+const motion$ = watchIsMotion$(GPIO_CONFIG.MOTION_SENSOR);
+const water$ = watchIsWater$(GPIO_CONFIG.WATER_SENSOR);
+const watchTempHum$ = watchTempHumidity$(GPIO_CONFIG.THERMOMETER);
 
-// // watchIsWater().subscribe((val)=> {console.log(val)})
-// function updateDistance(socket){
-//     return function(){
-//         getDistance().then(function(distanceOutput){
-//             console.log(distanceOutput)
-//             socket.broadcast.emit('distance', distanceOutput);
-//             if(distanceOutput > 50){
-//                 alarm();
-//             }
-//         });
-//     }
-
-// }
+// motion$.subscribe(log('motion'));
+// water$.subscribe(log('water'));
+watchTempHum$.subscribe(log('temp,hum'))
 
 
+function log(type){
+    return (val) =>{
+        if(val instanceof Object){
+            for (let property in val) {
+                if (val.hasOwnProperty(property)) {
+                    console.log(`${property} is ${val[property]}`)
+                }
+            }
+        }else{
+            console.log(`${type} is ${val}`)
+        }
 
-// const Gpio = require('onoff').Gpio;
-
-// var pushButton = new Gpio(14, 'out'); //
-// setInterval(function name(params) {
-//     console.log(1);
-
-//     pushButton.writeSync(1);
-// },1000)
-
-  
+    }
+}
+// startHTTP().then(function (socket) {
+//     console.log('user connected')
+// });
