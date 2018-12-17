@@ -1,4 +1,4 @@
-/*
+/**
 Schema:  Pi Model 3B V1.2
 
    3V3  (1) (2)  5V
@@ -21,7 +21,8 @@ GPIO13 (33) (34) GND
 GPIO19 (35) (36) GPIO16
 GPIO26 (37) (38) GPIO20
    GND (39) (40) GPIO21
-  * */
+
+**/
 
 export const GPIO_CONFIG = {
     WATER_SENSOR: 8,
