@@ -3,7 +3,7 @@ import {switchMap, map} from "rxjs/operators";
 import {execSync} from 'child_process';
 
 function init(gpioPhysicalNo, observer) {
-    const resp = execSync(`gpio mode ${gpioPhysicalNo} in`);
+    const resp = execSync(`gpio -1 mode ${gpioPhysicalNo} in`);
     return observer.next({resp, gpioPhysicalNo});
 }
 
