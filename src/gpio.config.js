@@ -28,5 +28,6 @@ export const GPIO_CONFIG = {
     MOTION_SENSOR: 10,
     THERMOMETER: 2, 
     DOOR: 12,
-    ACTION_BUTTON: 16
+    ACTION_BUTTON: 16,
+    BUZZER: 12
 }

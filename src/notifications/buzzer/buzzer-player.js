@@ -1,5 +1,4 @@
 import {execSync} from 'child_process';
-const MELODY = [1000,2000,3000,4000, 5000, 6000];
 
 const init = (gpioPhysicalNo) => {
     execSync(`gpio -1 mode ${gpioPhysicalNo} out`);
@@ -21,17 +20,17 @@ const configure = (onSignal,onPause) => {
     }
 }
 
-export function play(gpioPhysicalNo) {
+export function getBuzzerPlayer(gpioPhysicalNo) {
     init(gpioPhysicalNo);
     let signalController = configure(switchOn(gpioPhysicalNo),switchOff(gpioPhysicalNo));
     let i = 0;
-    const createSignal = function(){
-        const impulsLength = MELODY[i++];
-        const pauseLength = MELODY[i++];
+    const createSignal = function(melody){
+        const impulsLength = melody[i++];
+        const pauseLength = melody[i++];
         if(!impulsLength ||  !pauseLength) { return; }
         signalController(impulsLength,pauseLength,function(){
-            createSignal();
+            createSignal(melody);
         })
     };
-    createSignal();
+    return createSignal;
 }
