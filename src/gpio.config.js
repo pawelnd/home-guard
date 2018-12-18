@@ -28,7 +28,7 @@ export const GPIO_CONFIG = {
     WATER_SENSOR: 8,
     MOTION_SENSOR: 10,
     THERMOMETER: 2, 
-    DOOR: 12,
+    DOOR: 18,
     ACTION_BUTTON: 16,
     BUZZER: 12
 }

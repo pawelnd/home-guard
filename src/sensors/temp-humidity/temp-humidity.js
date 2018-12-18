@@ -22,7 +22,7 @@ const reader =  (gpioNo) => {
     }
 }
 
-export function watchTempHumidity$(gpioNo, delay = 1000) {
+export function watchTempHumidity$(gpioNo, delay = 10000) {
     return interval(delay).pipe(
         map(() => reader(gpioNo)())
     )
