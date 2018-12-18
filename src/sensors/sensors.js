@@ -1,5 +1,4 @@
 import {gpioWatch} from "../gpio/gpio-read";
-import {GPIO_CONFIG} from "../gpio.config";
 import {GPIO_MODE} from "../gpio/gpio-mode";
 
 export function watchIsMotion$(gpioNo){
