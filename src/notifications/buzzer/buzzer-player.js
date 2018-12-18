@@ -6,14 +6,12 @@ const init = (gpioPhysicalNo) => {
 
 const switchOn =  (gpioPhysicalNo) => {
     return () => {
-        console.log('switchON');
         execSync(`gpio -1 write ${gpioPhysicalNo} 0`);
     };
 }
 
 const switchOff =  (gpioPhysicalNo) => {
     return () => {
-        console.log('switchOFF');
         execSync(`gpio -1 write ${gpioPhysicalNo} 1`);
     };
 }
@@ -28,7 +26,6 @@ const stopSignal = (timeouts) => {
 
 const configureGPIOs = (doSignal, doPause) => {
     return (signalLength, pauseLength, callback) => {
-        console.log(signalLength, signalLength + pauseLength);
         const timeouts = [
             setTimeout(doSignal, 0),
             setTimeout(doPause, signalLength),
@@ -56,11 +53,10 @@ export function getBuzzerPlayer(gpioPhysicalNo) {
         }
         const impulsLength = melody[i++];
         const pauseLength = melody[i++];
-        if(!impulsLength ||  !pauseLength) { i = 0; createSignal(melody)  }
+        if(!impulsLength ||  !pauseLength) { i = 0; createSignal(melody); return;  }
         stopTimers = signalController(impulsLength, pauseLength,function(){
             createSignal(melody);
         });
-        return stopTimers;
     };
     return {
         start: createSignal,
