@@ -1,15 +1,14 @@
-import {gpioWatch} from "./gpio-read/gpio";
+import {gpioWatch} from "../gpio/gpio-read";
 import {GPIO_CONFIG} from "../gpio.config";
-import {GPIO_MODE} from "./gpio-read/gpio-mode";
+import {GPIO_MODE} from "../gpio/gpio-mode";
 
 export function watchIsMotion$(gpioNo){
-    return gpioWatch(GPIO_CONFIG.MOTION_SENSOR)
+    return gpioWatch(gpioNo)
 }
 
 export function watchIsWater$(gpioNo){
-    return gpioWatch(GPIO_CONFIG.WATER_SENSOR)
+    return gpioWatch(gpioNo)
 }
-
 
 export function watchDoorOpen(gpioNo){
     return gpioWatch(gpioNo, GPIO_MODE.UP)

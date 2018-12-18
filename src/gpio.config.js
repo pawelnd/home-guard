@@ -30,5 +30,6 @@ export const GPIO_CONFIG = {
     THERMOMETER: 2, 
     DOOR: 18,
     ACTION_BUTTON: 16,
-    BUZZER: 12
+    BUZZER: 12,
+    RELAY: 22
 }
