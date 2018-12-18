@@ -44,7 +44,7 @@ export function getBuzzerPlayer(gpioPhysicalNo) {
         if(stopTimers){
             stopTimers();
         }
-
+        switchOff(gpioPhysicalNo)();
     };
 
     const createSignal = function(melody){
