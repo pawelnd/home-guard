@@ -1,15 +1,19 @@
 import {execSync} from "child_process";
+
 const initPin = (gpioPhysicalNo) => {
     execSync(`gpio -1 mode ${gpioPhysicalNo} out`);
 }
 
 const setHigh = (gpioPhysicalNo) => () => {
-    execSync(`gpio -1 write ${gpioPhysicalNo} 1`);
+    setCommand(gpioPhysicalNo,true);
 }
 const setLow = (gpioPhysicalNo) => () => {
-    execSync(`gpio -1 write ${gpioPhysicalNo} 1`);
+    setCommand(gpioPhysicalNo,false);
 }
-export function getRelayController(gpioPhysicalNo) {
+const setCommand  = (pin,state) => {
+    execSync(`gpio -1 write ${pin} ${state?1:0}`);
+}
+export function getPinOutputController(gpioPhysicalNo) {
     initPin(gpioPhysicalNo)
     return {
         setHigh: setHigh(gpioPhysicalNo),
