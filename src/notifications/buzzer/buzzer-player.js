@@ -1,22 +1,6 @@
-import {execSync} from 'child_process';
+import {getPinOutputController} from "../../gpio/gpio-write";
 
-const init = (gpioPhysicalNo) => {
-    execSync(`gpio -1 mode ${gpioPhysicalNo} out`);
-};
-
-const switchOn =  (gpioPhysicalNo) => {
-    return () => {
-        execSync(`gpio -1 write ${gpioPhysicalNo} 0`);
-    };
-}
-
-const switchOff =  (gpioPhysicalNo) => {
-    return () => {
-        execSync(`gpio -1 write ${gpioPhysicalNo} 1`);
-    };
-}
-
-const stopSignal = (timeouts) => {
+const cancelSignal = (timeouts) => {
     return () => {
         for (const timeoutHandler of timeouts) {
             clearTimeout(timeoutHandler);
@@ -24,27 +8,35 @@ const stopSignal = (timeouts) => {
     }
 }
 
-const configureGPIOs = (doSignal, doPause) => {
+const startSignal = (pinOutputController) => () => {
+    pinOutputController.setLow();
+}
+
+const stopSignal = (pinOutputController) => () => {
+    pinOutputController.setHigh();
+}
+
+const configure = (doSignal, doPause) => {
     return (signalLength, pauseLength, callback) => {
         const timeouts = [
             setTimeout(doSignal, 0),
             setTimeout(doPause, signalLength),
             setTimeout(callback, signalLength + pauseLength)
         ];
-        return stopSignal(timeouts);
+        return cancelSignal(timeouts);
     }
 }
 
-export function getBuzzerPlayer(gpioPhysicalNo) {
-    init(gpioPhysicalNo);
-    let signalController = configureGPIOs(switchOn(gpioPhysicalNo),switchOff(gpioPhysicalNo));
+export function getBuzzerPlayer(pin) {
+    let pinOutputController = getPinOutputController(pin);
+    let signalController = configure(startSignal(pinOutputController),stopSignal(pinOutputController));
     let i = 0;
     let stopTimers = null;
-    const stopSignal = () => {
+    const cancelSignal = () => {
         if(stopTimers){
             stopTimers();
         }
-        switchOff(gpioPhysicalNo)();
+        pinOutputController.setHigh();
     };
 
     const createSignal = function(melody){
@@ -60,6 +52,6 @@ export function getBuzzerPlayer(gpioPhysicalNo) {
     };
     return {
         start: createSignal,
-        stop: stopSignal
+        stop: cancelSignal
     };
 }
