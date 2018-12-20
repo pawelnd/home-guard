@@ -1,23 +1,21 @@
-import {interval, Observable} from 'rxjs';
-import {switchMap, map} from "rxjs/operators";
-import {execSync} from 'child_process';
-import {GPIO_MODE} from "./gpio-mode";
+import {Observable} from 'rxjs';
+import {map, filter} from "rxjs/operators";
 
-function init(gpioPhysicalNo, observer, mode) {
-    const resp = execSync(`gpio -1 mode ${gpioPhysicalNo} ${mode}`);
-    return observer.next({resp, gpioPhysicalNo});
-}
+const gpio = require('rpi-gpio');
 
-function read(gpioPhysicalNo) {
-    let resp = execSync(`gpio -1 read ${gpioPhysicalNo}`);
-    return parseInt(resp);
-}
+const GPIOState$ = Observable.create(
+    (observer) => {
+        gpio.on('change', ({channel, value}) => {
+            observer.next({channel, value})
+        })
+    }
+)
 
-export function gpioWatch(gpioPhysicalNo,mode=GPIO_MODE.IN,intervalTime = 10) {
-    return Observable.create(
-        (observer) => init(gpioPhysicalNo, observer, mode)
-    ).pipe(
-        switchMap(() => interval(intervalTime)),
-        map(() => read(gpioPhysicalNo))
-    );
+
+export function gpioWatch(gpioPhysicalNo, intervalTime = 10) {
+    gpio.setup(gpioPhysicalNo, gpio.DIR_IN, gpio.EDGE_BOTH);
+    return GPIOState$.pipe(
+        filter(({channel}) => channel != gpioPhysicalNo),
+        map(({value}) => value)
+    )
 }
