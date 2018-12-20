@@ -10,9 +10,9 @@ export function watchIsWater$(gpioNo){
 }
 
 export function watchDoorOpen(gpioNo){
-    return gpioWatch(gpioNo, GPIO_MODE.UP)
+    return gpioWatch(gpioNo)
 }
 
 export function watchButton(gpioNo){
-    return gpioWatch(gpioNo, GPIO_MODE.UP)
+    return gpioWatch(gpioNo)
 }

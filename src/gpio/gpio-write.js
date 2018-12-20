@@ -1,22 +1,36 @@
-import {execSync} from "child_process";
+const gpio = require('rpi-gpio');
 
-const initPin = (gpioPhysicalNo) => {
-    execSync(`gpio -1 mode ${gpioPhysicalNo} out`);
+const initPin = (pin) => {
+    return new Promise(function (resolve, reject) {
+        try {
+            gpio.setup(pin, gpio.DIR_OUT, () => {
+                resolve(pin)
+            });
+        } catch (error) {
+            reject(error);
+        }
+    });
+
 }
 
-const setHigh = (gpioPhysicalNo) => () => {
-    setCommand(gpioPhysicalNo,true);
+const setHigh = (pin) => () => {
+    setState(pin, true);
 }
-const setLow = (gpioPhysicalNo) => () => {
-    setCommand(gpioPhysicalNo,false);
+const setLow = (pin) => () => {
+    setState(pin, false)
 }
-const setCommand  = (pin,state) => {
-    execSync(`gpio -1 write ${pin} ${state?1:0}`);
+const setState = (pin, state) => {
+    gpio.write(pin, state, () => {});
 }
-export function getPinOutputController(gpioPhysicalNo) {
-    initPin(gpioPhysicalNo)
+
+export function getPinOutputController(pin) {
+    let pinInitialized = initPin(pin);
     return {
-        setHigh: setHigh(gpioPhysicalNo),
-        setLow: setLow(gpioPhysicalNo),
+        setHigh: () => {
+            pinInitialized.then(setHigh(pin))
+        },
+        setLow: () => {
+            pinInitialized.then(setLow(pin))
+        },
     }
 }
