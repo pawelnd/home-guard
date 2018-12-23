@@ -1,5 +1,5 @@
-import {first, Observable, tap} from 'rxjs';
-import {map, filter} from "rxjs/operators";
+import {first, from, merge, Observable, pipe, tap} from 'rxjs';
+import {map, filter, switchMap} from "rxjs/operators";
 
 const gpio = require('rpi-gpio');
 
@@ -14,11 +14,34 @@ const GPIOState$ = Observable.create(
         gpio.on('change', bindObserverToChange(observer));
     }
 )
+const GPIOInitialStateReader = (pin) => Observable.create(
+    (observer) => {
+        gpio.read(pin, (err,val) => {
+            observer.next(val);
+        });
+    }
+)
 
-export function gpioWatch(gpioPhysicalNo) {
-    gpio.setup(gpioPhysicalNo, gpio.DIR_IN, gpio.EDGE_BOTH);
-    return GPIOState$.pipe(
-        filter(({channel}) => channel == gpioPhysicalNo),
+const doSetup = (pin) => new Promise((resolve)=>{
+    gpio.setup(pin, gpio.DIR_IN, gpio.EDGE_BOTH, () => {
+        resolve(pin);
+    });
+})
+
+switchMap(()=> GPIOState$),
+    filter(({channel}) => channel == pin),
+    map(({value}) => value)
+export function gpioWatch(pin) {
+    const changeListener = GPIOState$.pipe(
+        filter(({channel}) => channel == pin),
         map(({value}) => value)
-    )
+    );
+
+    const initialListener = GPIOInitialStateReader(pin);
+
+    let setupPromise = doSetup(pin);
+    return from(setupPromise).pipe(
+        switchMap(()=> merge(changeListener,initialListener))
+    );
+
 }

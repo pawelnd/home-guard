@@ -10,7 +10,7 @@ export function watchIsWater$(){
     return gpioWatch(GPIO_CONFIG.WATER_SENSOR)
 }
 
-export function watchDoorOpen(){
+export function watchDoorsAreOpen(){
     return gpioWatch(GPIO_CONFIG.DOOR)
 }
 
