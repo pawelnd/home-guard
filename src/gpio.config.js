@@ -25,11 +25,11 @@ GPIO26 (37) (38) GPIO20
 **/
 
 export const GPIO_CONFIG = {
-    WATER_SENSOR: 8,
-    MOTION_SENSOR: 10,
-    THERMOMETER: 2, 
-    DOOR: 18,
-    ACTION_BUTTON: 16,
-    BUZZER: 12,
-    RELAY: 22
+    MOTION_SENSOR: 8,
+    DOOR: 10,
+    ACTION_BUTTON: 12,
+    BUZZER: 16,
+    WATER_SENSOR: 24,
+    RELAY: 18,
+    THERMOMETER: 22,
 }
