@@ -1,3 +1,4 @@
+import { map } from 'rxjs/operators';
 import {gpioWatch} from "../gpio/gpio-read";
 import {GPIO_MODE} from "../gpio/gpio-mode";
 import {GPIO_CONFIG} from "../gpio.config";
@@ -11,7 +12,9 @@ export function watchIsWater$(){
 }
 
 export function watchDoorsAreOpen(){
-    return gpioWatch(GPIO_CONFIG.DOOR)
+    return gpioWatch(GPIO_CONFIG.DOOR).pipe(
+        map( (out) => !out)
+    );
 }
 
 export function watchButton(){
