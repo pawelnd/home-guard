@@ -7,5 +7,5 @@ export const DOOR_DISARM = 'DOOR_DISARM';
 export const doorOpen = () => ({type: DOOR_OPEN});
 export const doorAlarmSetWarning = () => ({type: DOOR_OPEN_WARNING});
 export const doorAlarmSetAlarm = () => ({type: DOOR_OPEN_ALARM});
-export const doorAlarmSetDisarm = () => ({type: DOOR_DISARM});
+export const doorDisarm = () => ({type: DOOR_DISARM});
 export const doorAlarmSetWaiting = () => ({type: DOOR_WAITING});
