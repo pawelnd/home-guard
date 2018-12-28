@@ -1,7 +1,9 @@
-import {DOOR_DISARM, DOOR_WAITING} from "./actions";
+import {DOOR_DISARM, DOOR_OPEN_ALARM, DOOR_OPEN_WARNING, DOOR_WAITING} from "./actions";
 
 const initialState = {
-    armed: true
+    alarmArmed: true,
+    alarmActive: false,
+    warningActive: false
 }
 
 export const doors = (state = initialState, action) => {
@@ -9,12 +11,29 @@ export const doors = (state = initialState, action) => {
         case DOOR_WAITING:
             return {
                 ...state,
-                armed: true
+                alarmArmed: true,
+                warningActive: false,
+                alarmActive: false
+            };
+        case DOOR_OPEN_WARNING:
+            return {
+                ...state,
+                warningActive: true,
+                alarmActive: false
+
+            };
+        case DOOR_OPEN_ALARM:
+            return {
+                ...state,
+                warningActive: false,
+                alarmActive: true
             };
         case DOOR_DISARM:
             return {
                 ...state,
-                armed: false
+                alarmArmed: false,
+                warningActive: false,
+                alarmActive: false
             };
         default:
             return state;
