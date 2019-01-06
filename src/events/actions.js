@@ -1,4 +1,4 @@
-import {Subject, timer} from "rxjs";
+import {Subject, throttleTime, timer} from "rxjs";
 import {
     filter,
     finalize,
@@ -93,7 +93,6 @@ let i = 0;
 setInterval(() => {
     console.log(i++ + ' sec')
 },1000);
-
 
 
 
