@@ -1,13 +1,13 @@
 import { marbles } from "rxjs-marbles/mocha";
 import { map } from "rxjs/operators";
 
-describe("rxjs-marbles", () => {
+describe("basic", () => {
 
-    it("should support marble tests", marbles(m => {
+    it("should support marble tests without values", marbles(m => {
 
         const source =  m.hot("--^-a-b-c-|");
         const subs =            "^-------!";
-        const expected =        "--b-c-d-|";
+        const expected = m.cold("--b-c-d-|");
 
         const destination = source.pipe(
             map(value => String.fromCharCode(value.charCodeAt(0) + 1))
@@ -15,14 +15,63 @@ describe("rxjs-marbles", () => {
         m.expect(destination).toBeObservable(expected);
         m.expect(source).toHaveSubscriptions(subs);
     }));
-});
 
+    it("should support marble tests with values", marbles(m => {
 
+        const inputs = {
+            a: 1,
+            b: 2,
+            c: 3
+        };
+        const outputs = {
+            x: 2,
+            y: 3,
+            z: 4
+        };
 
-import * as assert from "assert";
+        const source =  m.hot("--^-a-b-c-|", inputs);
+        const subs =            "^-------!";
+        const expected = m.cold("--x-y-z-|", outputs);
 
-describe('Array', function() {
-    it('should return -1 when the value is not present', function() {
-        assert.equal([1,2,3].indexOf(4), -1);
-    });
+        const destination = source.pipe(
+            map((value) => value + 1)
+        );
+        m.expect(destination).toBeObservable(expected);
+        m.expect(source).toHaveSubscriptions(subs);
+    }));
+
+    it("should support marble tests with errors", marbles(m => {
+
+        const source =  m.hot("--^-a-b-c-#");
+        const subs =            "^-------!";
+        const expected = m.cold("--a-b-c-#");
+
+        const destination = source;
+        m.expect(destination).toBeObservable(expected);
+        m.expect(source).toHaveSubscriptions(subs);
+    }));
+
+    it("should support marble tests with explicit errors", marbles(m => {
+
+        const inputs = {
+            a: 1,
+            b: 2,
+            c: 3
+        };
+        const outputs = {
+            x: 2,
+            y: 3,
+            z: 4
+        };
+
+        const source =  m.hot("--^-a-b-c-#", inputs, new Error("Boom!"));
+        const subs =            "^-------!";
+        const expected = m.cold("--x-y-z-#", outputs, new Error("Boom!"));
+
+        const destination = source.pipe(
+            map((value) => value + 1)
+        );
+        m.expect(destination).toBeObservable(expected);
+        m.expect(source).toHaveSubscriptions(subs);
+    }));
 });

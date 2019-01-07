@@ -1,0 +1,5 @@
+export const DOOR_ACTIONS = {
+    DOOR_ARM:'DOOR_ARM',
+    DOOR_DISARM:'DOOR_DISARM',
+    DOOR_OPEN:'DOOR_OPEN',
+}
