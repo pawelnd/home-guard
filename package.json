@@ -41,6 +41,7 @@
     "rxjs": "^6.3.3",
     "rxjs-compat": "^6.3.3",
     "rxjs-marbles": "^5.0.0",
+    "sinon": "^7.2.2",
     "socket.io": "^2.2.0"
   }
 }
