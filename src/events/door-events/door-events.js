@@ -1,17 +1,16 @@
-import {filter, publish, tap} from "rxjs/operators";
-import {getEventStream} from "../events";
 import {DOOR_ACTIONS} from "../event-type";
-import {timer} from "rxjs";
-import {switchMap,takeUntil} from "rxjs/operators";
+import {publish, switchMap, takeUntil, tap} from "rxjs";
+import {doAlarm, doDisarm, doWarn} from "./door-event-actions";
 
-export const createEvents = (events$) => {
+
+const WARN_DELAY = 5000, ALARM_DELAY = 4000;
+
+const bindHandlerToActions = (warnAction,alarmAction,disarmAction) => events$ => {
     const disarm$ = events$.pipe(
         filter(type => type == DOOR_ACTIONS.DOOR_DISARM),
         tap(() => {console.log("DOOR DISARM RECEIVED")}),
         publish()
     );
-
-    disarm$.connect();
 
     const  arm$ = events$.pipe(
         filter(type => type == DOOR_ACTIONS.DOOR_ARM),
@@ -19,30 +18,33 @@ export const createEvents = (events$) => {
         publish()
     );
 
-    arm$.connect();
-
     const  doorsOpen$ = events$.pipe(
         filter(type => type == DOOR_ACTIONS.DOOR_OPEN),
         tap(() => {console.log("DOOR OPEN RECEIVED")}),
         publish()
     );
 
-    doorsOpen$.connect();
+    disarm$.pipe(
+        tap(disarmAction)
+    ).subscribe();
 
     arm$.pipe(
         switchMap(() => doorsOpen$.pipe(
-            tap(() => {console.log("DOOR OPENED")}),
             takeUntil(disarm$),
-            switchMap(() => timer(5000).pipe(
-                tap(() => {console.log("DOOR WARN")}),
+            switchMap(() => timer(WARN_DELAY).pipe(
+                tap(warnAction),
                 takeUntil(disarm$),
-                switchMap(() => timer(5000).pipe(
-                    tap(() => {console.log("DOOR ALARM")}),
+                switchMap(() => timer(ALARM_DELAY).pipe(
+                    tap(alarmAction),
                     takeUntil(disarm$)
                 ))
             ))
         ))
     ).subscribe();
+
+    [disarm$,arm$,doorsOpen$].forEach((el) => {el.connect()})
 }
+
+export const runDoorEvents = bindHandlerToActions(doWarn,doAlarm,doDisarm);
 
 

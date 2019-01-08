@@ -1,5 +1,5 @@
 import {Subject} from "rxjs";
-import {createEvents, disarm$} from "./door-events/door-events";
+import {runDoorEvents} from "./door-events/door-events";
 
 const actionStream = new Subject();
 
@@ -7,12 +7,12 @@ export const sendEvent = (type) => {
     actionStream.next(type);
 }
 
-export const getEventStream = () => {
+const getEventStream = () => {
     return actionStream.asObservable();
 }
 
+const allEvents$ = getEventStream();
 
-(function doRegister() {
-    createEvents(getEventStream());
-    }
-)()
+(function init() {
+    runDoorEvents(allEvents$);
+})()
