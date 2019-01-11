@@ -51,7 +51,10 @@ export function getBuzzerPlayer(pin) {
         });
     };
     return {
-        start: createSignal,
+        start: (melody) => {
+            cancelSignal();
+            createSignal(melody);
+        },
         stop: cancelSignal
     };
 }

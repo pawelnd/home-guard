@@ -1,9 +1,11 @@
 import {Subject} from "rxjs";
-import {runDoorEvents} from "./door-events/door-events";
+import {initDoorEvents} from "./door-events/door-events";
+import {logger} from "../logger";
 
 const actionStream = new Subject();
 
 export const sendEvent = (type) => {
+    logger.debug(`Sending event ${type}`)
     actionStream.next(type);
 }
 
@@ -13,6 +15,7 @@ const getEventStream = () => {
 
 const allEvents$ = getEventStream();
 
-(function init() {
-    runDoorEvents(allEvents$);
-})()
+export const initEvents = () => {
+    logger.debug('Initializing events');
+    initDoorEvents(allEvents$);
+}

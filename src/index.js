@@ -1,21 +1,37 @@
+import {filter, pairwise} from "rxjs/operators";
+
 require('dotenv').config();
 
 import {combineLatest} from "rxjs";
 import {watchButton, watchDoorsAreOpen, watchIsMotion$} from "./sensors/sensors";
-import {getBuzzerPlayer} from "./notifications/buzzer/buzzer-player";
-import {GPIO_CONFIG} from "./gpio.config";
-import {BUZZER_MELODIES} from "./notifications/buzzer/buzzer-melodies";
+import {initEvents, sendEvent} from "./events/events";
+import {DOOR_ACTIONS} from "./events/event-type";
+import {logger} from "./logger";
 
 let motion$ = watchIsMotion$();
 let doorOpen$ = watchDoorsAreOpen();
 let buttonPressed$ = watchButton();
 
-var i = 0;
-let buzzerPlayer = getBuzzerPlayer(GPIO_CONFIG.BUZZER);
+doorOpen$.pipe(
+    pairwise(),
+    filter(([prev,current]) => prev === false && current === true)
+).subscribe(() => {
+    sendEvent(DOOR_ACTIONS.DOOR_OPEN);
+});
 
-const combined = combineLatest(motion$, buttonPressed$,doorOpen$);
-combined.subscribe(([isMotion,buttonPushed, doorsAreOpen])=>{
-    let logLine = `${i++%100} door -> ${doorsAreOpen} button -> ${buttonPushed} motion -> ${isMotion}`;
-    console.log(logLine);
-})
+buttonPressed$.pipe(
+    pairwise(),
+    filter(([prev,current]) => prev === false && current === true)
+).subscribe(() => {
+    sendEvent(DOOR_ACTIONS.DOOR_DISARM)
+});
+
+
+combineLatest(motion$, buttonPressed$, doorOpen$)
+    .subscribe(([ buttonPushed, doorsAreOpen]) => {
+        let logLine = `Inputs changed: door -> ${doorsAreOpen} button -> ${buttonPushed}`;
+        logger.debug(logLine);
+    });
+
+initEvents();
 
