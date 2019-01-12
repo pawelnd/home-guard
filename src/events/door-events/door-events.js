@@ -1,13 +1,14 @@
 import {DOOR_ACTIONS} from "../event-type";
 import {publish, switchMap, takeUntil, tap, filter} from "rxjs/operators";
-import {doAlarm, doDisarm, doWarn} from "./door-event-actions";
+import {doAlarm, doArmNotification, doDisarm, doWarn} from "./door-event-actions";
 import {of, timer} from "rxjs";
 import {logger} from "./../../logger";
 import {sendEvent} from "../events";
+import {watchDoorsAreOpen} from "../../sensors/sensors";
 
 const WARN_DELAY = 5000, ALARM_DELAY = 4000, ARMING_AGAIN_DELAY = 10000;
 
-const bindHandlerToActions = (warnAction,alarmAction,disarmAction) => events$ => {
+const bindHandlerToActions = (warnAction,alarmAction,disarmAction,armAction) => events$ => {
     logger.debug('Creating event handler for door');
 
     let doorEvents = events$.pipe(
@@ -33,9 +34,11 @@ const bindHandlerToActions = (warnAction,alarmAction,disarmAction) => events$ =>
         filter(type => type == DOOR_ACTIONS.DOOR_CLOSED),
     );
 
+    disarm$.pipe( tap(disarmAction)).subscribe();
+    arm$.pipe( tap(armAction)).subscribe();
+
     /* rearming when door stays untouched */
     disarm$.pipe(
-        tap(disarmAction),
         switchMap(() => timer(ARMING_AGAIN_DELAY).pipe(
             tap(() => {sendEvent(DOOR_ACTIONS.DOOR_ARM)}),
             takeUntil(doorsOpen$)
@@ -70,6 +73,6 @@ const bindHandlerToActions = (warnAction,alarmAction,disarmAction) => events$ =>
     sendEvent(DOOR_ACTIONS.DOOR_ARM);
 }
 
-export const initDoorEvents = bindHandlerToActions(doWarn,doAlarm,doDisarm);
+export const initDoorEvents = bindHandlerToActions(doWarn,doAlarm,doDisarm,doArmNotification);
 
 
