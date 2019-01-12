@@ -33,8 +33,13 @@ const bindHandlerToActions = (warnAction,alarmAction,disarmAction) => events$ =>
         filter(type => type == DOOR_ACTIONS.DOOR_CLOSED),
     );
 
+    /* rearming when door stays untouched */
     disarm$.pipe(
-        tap(disarmAction)
+        tap(disarmAction),
+        switchMap(() => timer(ARMING_AGAIN_DELAY).pipe(
+            tap(() => {sendEvent(DOOR_ACTIONS.DOOR_ARM)}),
+            takeUntil(doorsOpen$)
+        ))
     ).subscribe();
 
     /* rearming action flow*/
