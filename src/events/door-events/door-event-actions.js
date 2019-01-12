@@ -24,5 +24,5 @@ export const doArmNotification = () => {
     logger.debug('Buzzer arm confirmation');
     buzzer.stop();
     buzzer.start(BUZZER_MELODIES.MELODY_NOTIFY);
-    setTimeout(() => buzzer.stop(),400)
+    setTimeout(() => buzzer.stop(),200)
 };

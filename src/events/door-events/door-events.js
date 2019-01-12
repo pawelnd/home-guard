@@ -41,7 +41,7 @@ const bindHandlerToActions = (warnAction,alarmAction,disarmAction,armAction) => 
     disarm$.pipe(
         switchMap(() => timer(ARMING_AGAIN_DELAY).pipe(
             tap(() => {sendEvent(DOOR_ACTIONS.DOOR_ARM)}),
-            takeUntil(doorsOpen$)
+            takeUntil(doorsOpen$,arm$)
         ))
     ).subscribe();
 
@@ -49,7 +49,7 @@ const bindHandlerToActions = (warnAction,alarmAction,disarmAction,armAction) => 
     doorClosed$.pipe(
         switchMap(() => timer(ARMING_AGAIN_DELAY).pipe(
             tap(() => {sendEvent(DOOR_ACTIONS.DOOR_ARM)}),
-            takeUntil(doorsOpen$),
+            takeUntil(doorsOpen$,arm$),
         ))
     ).subscribe()
 
