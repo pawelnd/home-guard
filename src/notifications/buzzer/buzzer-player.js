@@ -1,4 +1,5 @@
 import {getPinOutputController} from "../../gpio/gpio-write";
+import {BUZZER_MELODIES} from "./buzzer-melodies";
 
 const cancelSignal = (timeouts) => {
     return () => {
@@ -32,6 +33,7 @@ export function getBuzzerPlayer(pin) {
     let signalController = configure(startSignal(pinOutputController),stopSignal(pinOutputController));
     let i = 0;
     let stopTimers = null;
+
     const cancelSignal = () => {
         if(stopTimers){
             stopTimers();

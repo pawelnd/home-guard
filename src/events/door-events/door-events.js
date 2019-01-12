@@ -5,61 +5,66 @@ import {of, timer} from "rxjs";
 import {logger} from "./../../logger";
 import {sendEvent} from "../events";
 
-const WARN_DELAY = 5000, ALARM_DELAY = 4000;
+const WARN_DELAY = 5000, ALARM_DELAY = 4000, ARMING_AGAIN_DELAY = 10000;
 
 const bindHandlerToActions = (warnAction,alarmAction,disarmAction) => events$ => {
     logger.debug('Creating event handler for door');
 
-    const disarm$ = events$.pipe(
-        filter(type => type == DOOR_ACTIONS.DOOR_DISARM),
-        tap(() => {logger.debug("Event received: DOOR DISARM RECEIVED")}),
+    let doorEvents = events$.pipe(
+        filter(type => Object.keys(DOOR_ACTIONS).indexOf(type) >= 0),
+        tap((type) => logger.debug(`Event received: ${type}`)),
         publish()
     );
+    doorEvents.connect();
 
-    const  arm$ = of(1)
-        /*events$.pipe(
+    const disarm$ = doorEvents.pipe(
+        filter(type => type == DOOR_ACTIONS.DOOR_DISARM),
+    );
+
+    const  arm$ = events$.pipe(
         filter(type => type == DOOR_ACTIONS.DOOR_ARM),
-        tap(() => {logger.debug("Event received: DOOR ARM RECEIVED")}),
-        publish()
-    );*/
+    );
 
     const  doorsOpen$ = events$.pipe(
         filter(type => type == DOOR_ACTIONS.DOOR_OPEN),
-        tap(() => {logger.debug("Event received: DOOR OPEN RECEIVED")}),
-        publish()
     );
-    disarm$.connect();
-    arm$.connect();
-    doorsOpen$.connect();
+
+    const doorClosed$ = events$.pipe(
+        filter(type => type == DOOR_ACTIONS.DOOR_CLOSED),
+    );
 
     disarm$.pipe(
-        tap(() => {logger.debug(11)}),
         tap(disarmAction)
     ).subscribe();
 
+    /* rearming action flow*/
+    doorClosed$.pipe(
+        switchMap(() => timer(ARMING_AGAIN_DELAY).pipe(
+            tap(() => {sendEvent(DOOR_ACTIONS.DOOR_ARM)}),
+            takeUntil(doorsOpen$),
+        ))
+    ).subscribe()
+
+    /* arming action flow */
     arm$.pipe(
-        tap(() => {logger.debug(1)}),
+        tap(() => {logger.debug('Alarm has been armed waiting for door open')}),
         switchMap(() => doorsOpen$.pipe(
-            tap(() => {logger.debug(2)}),
+            tap(() => {logger.debug(`Door has been opened. Warning buzzer will be activated in ${WARN_DELAY/1000} sec`)}),
             takeUntil(disarm$),
             switchMap(() => timer(WARN_DELAY).pipe(
-                tap(() => {logger.debug(3)}),
                 tap(warnAction),
                 takeUntil(disarm$),
                 switchMap(() => timer(ALARM_DELAY).pipe(
-                    tap(() => {logger.debug(4)}),
                     tap(alarmAction),
                     takeUntil(disarm$)
                 ))
             ))
         ))
     ).subscribe();
+
+    sendEvent(DOOR_ACTIONS.DOOR_ARM);
 }
 
-export const initDoorEvents = () => {
-    bindHandlerToActions(doWarn,doAlarm,doDisarm);
-    sendEvent(DOOR_ACTIONS.DOOR_ARM);
-    sendEvent(DOOR_ACTIONS.DOOR_OPEN);
-};
+export const initDoorEvents = bindHandlerToActions(doWarn,doAlarm,doDisarm);
 
 
