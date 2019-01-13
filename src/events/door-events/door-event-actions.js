@@ -3,24 +3,28 @@ import {GPIO_CONFIG} from "../../gpio.config";
 import {BUZZER_MELODIES} from "../../notifications/buzzer/buzzer-melodies";
 import {logger} from "../../logger";
 
+/**
+ * Contains side effects for handling door events.
+ * @type {{stop, start}}
+ */
 const buzzer = getBuzzerPlayer(GPIO_CONFIG.BUZZER);
 
-export const doWarn = () => {
+export const onWarningSideEffects = () => {
     logger.debug('Buzzer warning');
     buzzer.stop();
     buzzer.start(BUZZER_MELODIES.MELODY_WARNING);
 };
-export const doAlarm = () => {
+export const onAlarmSIdeEffect = () => {
     logger.debug('Buzzer alarming');
     buzzer.stop();
     buzzer.start(BUZZER_MELODIES.MELODY_ALARM);
 };
-export const doDisarm = () => {
+export const onDisarmSideEffect = () => {
     logger.debug('Buzzer disarmed');
     buzzer.stop();
 };
 
-export const doArmNotification = () => {
+export const onArmingSideEffect = () => {
     logger.debug('Buzzer arm confirmation');
     buzzer.stop();
     buzzer.start(BUZZER_MELODIES.MELODY_NOTIFY);
