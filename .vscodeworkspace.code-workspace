@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings":{
+		"sync-rsync.shell": "ssh -p 22",
+		"sync-rsync.remote": "pi@192.168.3.8:/home/pi/share/home-guard"		,
+		"sync-rsync.local": "C:/Users/pzych/IdeaProjects/home-guard2",
+		"sync-rsync.onSaveIndividual": true,
+		"sync-rsync.executableShell": "c:/bash.exe"
+	}
+}
