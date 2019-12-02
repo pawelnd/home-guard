@@ -1,35 +1,23 @@
-import { filter, pairwise } from 'rxjs/operators';
-import { sendEvent } from '../events';
-import { DoorEvents } from '../event-type';
-import { initDoorEvents } from './door-events';
+import { interval, Subject, timer, pipe, zip } from 'rxjs';
+import { switchMap, tap, filter, subscribeOn } from 'rxjs/operators';
+import { States } from './door-states';
 
 /**
  * It creates listener on sensors streams and execute proper events by {@link sendEvent}
  * @param doorOpen$
  * @param buttonPressed$
  */
-export const createDoorController = (
-  doorOpen$,
-  buttonPressed$,
-  events$,
-) => {
-  initDoorEvents(events$);
+export const createDoorController = (doorOpen$, buttonPressed$) => {
+  const disarmed = zip(doorOpen$, buttonPressed$).pipe(
+    tap('STATUS: disarmed'),
+    filter((open, pressed) => open === false && pressed === false),
+    // tap('ALARM ARMED'),
+  );
 
-  doorOpen$.pipe(pairwise()).subscribe(([prev, current]) => {
-    if (prev === false && current === true) {
-      sendEvent(DoorEvents.DOOR_OPEN);
-    }
-    if (prev === true && current === false) {
-      sendEvent(DoorEvents.DOOR_CLOSED);
-    }
-  });
-
-  buttonPressed$
+  timer(1000)
     .pipe(
-      pairwise(),
-      filter(([prev, current]) => prev === false && current === true),
+      tap(() => console.log('STARTING EVENT HANDLERS')),
+      switchMap(() => disarmed),
     )
-    .subscribe(() => {
-      sendEvent(DoorEvents.DOOR_KEY_PRESSED);
-    });
+    .subscribe();
 };

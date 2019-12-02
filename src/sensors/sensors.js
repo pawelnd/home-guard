@@ -1,6 +1,5 @@
 import { map, tap } from 'rxjs/operators';
 import { gpioWatch } from '../gpio/gpio-read';
-import { GPIO_MODE } from '../gpio/gpio-mode';
 import { GPIO_CONFIG } from '../gpio.config';
 
 export function watchIsMotion$() {
